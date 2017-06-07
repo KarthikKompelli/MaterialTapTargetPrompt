@@ -156,7 +156,7 @@ public class MaterialTapTargetPrompt
      * @return true if app runs on chromium
      */
     private static boolean isAppRunningOnChromium(Context ctx) {
-        // ARC Documetation ( https://developer.chrome.com/apps/getstarted_arc )
+        // ARC Documentation ( https://developer.chrome.com/apps/getstarted_arc )
         // recommends to use android.os.Build.BRAND and android.os.Build.MANUFACTURER
         // to detect whether app runs on Cromebook  or not
         // Unfortunately in many cases it returns "google" instead (could be in developers build only?)
@@ -186,14 +186,14 @@ public class MaterialTapTargetPrompt
             // that the prompt can be added behind the navigation drawer
             if (contentView.getChildAt(0).getClass().getName().equals("android.support.v4.widget.DrawerLayout"))
             {
-                mParentView = (ViewGroup)contentView.getChildAt(0);
+                mParentView = (ViewGroup) contentView.getChildAt(0);
                 mParentViewIsDecor = false;
             }
             else
             {
                 // at chromeOS if we add PromptView directly to DecorView => touch events do not reach PromptView at all
                 // so, let's add PromptView directly to content view there
-                if (isAppRunningOnChromium(mActivity)){
+                if (isAppRunningOnChromium(mActivity)) {
                     mParentView = (ViewGroup) ((ViewGroup) decorView.findViewById(android.R.id.content));
                     mParentViewIsDecor = false;
                 } else {
