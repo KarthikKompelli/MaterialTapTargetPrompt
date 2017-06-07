@@ -151,6 +151,25 @@ public class MaterialTapTargetPrompt
     }
 
     /**
+     *
+     * @param ctx - context
+     * @return true if app runs on chromium
+     */
+    private static boolean isAppRunningOnChromium(Context ctx) {
+        // ARC Documentation ( https://developer.chrome.com/apps/getstarted_arc )
+        // recommends to use android.os.Build.BRAND and android.os.Build.MANUFACTURER
+        // to detect whether app runs on Cromebook  or not
+        // Unfortunately in many cases it returns "google" instead (could be in developers build only?)
+        // so we will also use hack from:
+        //   https://stackoverflow.com/questions/39784415/how-to-detect-programmatically-if-android-app-is-running-in-chrome-book-or-in
+        String brand_code = android.os.Build.BRAND;
+        String manufacture_code = android.os.Build.MANUFACTURER;
+        return (brand_code != null && brand_code.toLowerCase().contains("chromium")) ||
+                (manufacture_code != null && manufacture_code.toLowerCase().contains("chromium")) ||
+                ctx.getPackageManager().hasSystemFeature("org.chromium.arc.device_management");
+    }
+
+    /**
      * Returns {@link #mParentView}.
      *
      * If the {@link #mParentView} is {@link null} it determines what view it should be.
@@ -162,24 +181,32 @@ public class MaterialTapTargetPrompt
         if (mParentView == null)
         {
             final ViewGroup decorView = (ViewGroup) mActivity.getWindow().getDecorView();
-            final ViewGroup contentView = (ViewGroup) ((ViewGroup) decorView.findViewById(android.R.id.content)).getChildAt(0);
+            final ViewGroup contentView = (ViewGroup) ((ViewGroup) decorView.findViewById(android.R.id.content));
             // If the content view is a drawer layout then that is the parent so
             // that the prompt can be added behind the navigation drawer
-            if (contentView.getClass().getName().equals("android.support.v4.widget.DrawerLayout"))
+            if (contentView.getChildAt(0).getClass().getName().equals("android.support.v4.widget.DrawerLayout"))
             {
-                mParentView = contentView;
+                mParentView = (ViewGroup) contentView.getChildAt(0);
                 mParentViewIsDecor = false;
             }
             else
             {
-                mParentView = decorView;
-                mParentViewIsDecor = true;
+                // at chromeOS if we add PromptView directly to DecorView => touch events do not reach PromptView at all
+                // so, let's add PromptView directly to content view there
+                if (isAppRunningOnChromium(mActivity)) {
+                    mParentView = (ViewGroup) ((ViewGroup) decorView.findViewById(android.R.id.content));
+                    mParentViewIsDecor = false;
+                } else {
+                    mParentView = decorView;
+                    mParentViewIsDecor = true;
+                }
             }
             mView.mClipBounds = mParentViewIsDecor;
         }
 
         return mParentView;
     }
+
 
     /**
      * Displays the prompt.
