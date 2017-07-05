@@ -1343,8 +1343,8 @@ public class MaterialTapTargetPrompt
             mSecondaryTextTypeface = setTypefaceFromAttrs(a.getString(R.styleable.PromptView_secondaryTextFontFamily), a.getInt(R.styleable.PromptView_secondaryTextTypeface, 0), mSecondaryTextTypefaceStyle);
 
             mIconDrawableColourFilter = a.getColor(R.styleable.PromptView_iconColourFilter, mBackgroundColour);
-            mIconDrawableTintList = a.getColorStateList(R.styleable.PromptView_iconTint);
-            mIconDrawableTintMode = parseTintMode(a.getInt(R.styleable.PromptView_iconTintMode, -1), PorterDuff.Mode.MULTIPLY);
+            mIconDrawableTintList = a.getColorStateList(R.styleable.PromptView_tapTargetIconTint);
+            mIconDrawableTintMode = parseTintMode(a.getInt(R.styleable.PromptView_tapTargetIconTintMode, -1), PorterDuff.Mode.MULTIPLY);
             mHasIconDrawableTint = true;
 
             mTargetId = a.getResourceId(R.styleable.PromptView_target, 0);
